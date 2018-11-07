@@ -1,0 +1,8 @@
+---
+title: "p8105_hw5_kz2334"
+author: "Kangkang Zhang"
+date: "11/7/2018"
+output: github_document
+---
+
+##Problem 1
