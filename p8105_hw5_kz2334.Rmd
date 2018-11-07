@@ -7,29 +7,43 @@ output: github_document
 
 ##Problem 1
 
-Load required packages
+Load required packages.
 
 ```{r library, message = FALSE}
 #load packages
 library(tidyverse)
 library(viridis)
 ```
-
+<br>
 Import file names to create a dataframe.
 
 ```{r import}
 file_name = tibble(
   id = list.files("./data/")
 )
-
-file_name
 ```
-
+<br>
 Read in data for each subject.
 
-```{r}
+```{r import data, message = FALSE}
 study_data = file_name %>% 
   mutate(infor = purrr::map(str_c("./data/", id), read_csv)) 
 
-```
+study_data
 
+
+```
+<br>
+Tidy the result and manipulate file names to include control arm and subject ID.
+
+```{r tidy}
+study_data = study_data %>%
+  mutate( id = str_replace(id, ".csv", "")) %>% 
+  separate(id, into = c("arm", "id"), sep = "_") %>%
+  unnest() %>% 
+  gather(week, value = value, week_1:week_8) %>% 
+  mutate(week = as.numeric(str_replace(week, "week_", "")),
+         id = as.numeric(id))
+
+study_data
+```
