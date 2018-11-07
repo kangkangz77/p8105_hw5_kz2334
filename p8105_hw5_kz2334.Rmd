@@ -6,3 +6,23 @@ output: github_document
 ---
 
 ##Problem 1
+
+Load required packages
+
+```{r library, message = FALSE}
+#load packages
+library(tidyverse)
+library(viridis)
+```
+
+Import file names to create a dataframe.
+
+```{r import}
+file_name = tibble(
+  id = list.files("./data/")
+)
+
+file_name
+```
+
+
