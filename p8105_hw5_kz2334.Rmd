@@ -25,4 +25,11 @@ file_name = tibble(
 file_name
 ```
 
+Read in data for each subject.
+
+```{r}
+study_data = file_name %>% 
+  mutate(infor = purrr::map(str_c("./data/", id), read_csv)) 
+
+```
 
