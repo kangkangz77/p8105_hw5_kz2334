@@ -42,8 +42,24 @@ study_data = study_data %>%
   separate(id, into = c("arm", "id"), sep = "_") %>%
   unnest() %>% 
   gather(week, value = value, week_1:week_8) %>% 
-  mutate(week = as.numeric(str_replace(week, "week_", "")),
-         id = as.numeric(id))
+  mutate(week = as.numeric(str_replace(week, "week_", "")))
 
 study_data
 ```
+<br>
+Make a spaghetti plot showing observations on each subject over time.
+```{r spaghetti plot, fig.align = 'center'}
+study_data %>%  
+  ggplot(aes(x = week, y = value, color = id, linetype = arm)) + 
+  geom_line() +
+  labs(
+    title = "Spaghetti plot",
+    x = "Week",
+    y = "Observation"
+  ) +
+  theme_bw() +
+  scale_x_discrete(breaks=seq(0, 8, 1)) +
+  scale_color_viridis(discrete = TRUE)
+```
+
+Globally, experimental group has larger observation values than control group. In experimental group, observations increased as time went by. In control group, observations fluctuated within an interval as time went by.
