@@ -96,7 +96,7 @@ We can see from the chart that Chicago is the city with the largest number of ho
 <br>
 
 For the city of Baltimore, MD, estimate the proportion of homicides that are unsolved; pull the estimated proportion and confidence intervals from the resulting tidy dataframe.
-```{r}
+```{r, Baltimore_data}
 Baltimore_data = prop_data %>%
   filter(city_state == "Baltimore, MD") 
 
@@ -117,10 +117,27 @@ broom::tidy(result) %>%
 ```
 
 The estimated proportion is `r broom::tidy(result) %>% pull(estimate)`, 95% confidence interval is (`r broom::tidy(result) %>% pull(conf.low)`, `r broom::tidy(result) %>% pull(conf.high)`).
+<br>
 
-```{r}
+---
+
+Run prop.test for each of the cities in your dataset, and extract both the proportion of unsolved homicides and the confidence interval for each. 
+
+```{r map, message = FALSE, warning = FALSE}
+#create function for tidy results
+prop_test_result = function(x, n){
+  
+  results = prop.test(x, n)
+  
+  broom::tidy(results) 
+
+}
+
+#map function and create tidy dataframe
 prop_data %>%
- mutate(result = map2(.x = num_unsolved_homi, .y = num_homicide, ~prop.test(x =.x, n = .y))) 
+ mutate(results = purrr::map2(num_unsolved_homi, num_homicide, prop_test_result)) %>% 
+ unnest() %>% 
+ select(city_state, num_homicide, num_unsolved_homi, estimate, conf.low, conf.high)
 
 ```
 
