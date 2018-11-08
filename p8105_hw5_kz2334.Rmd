@@ -66,3 +66,16 @@ study_data %>%
 Globally, experimental group has larger observation values than control group. In experimental group, observations increased as time went by. In control group, observations fluctuated within an interval as time went by.
 
 ##Problem 2
+
+Import and describe the raw data. 
+```{r 2.1 import, message = FALSE} 
+homicide_data = read_csv("./p2_data/homicide-data.csv")
+
+homicide_data
+```
+<br>
+This dataset contains `r nrow(homicide_data)` rows and `r ncol(homicide_data)` columns, with each row resprenting a single homicide record over the past decade in 50 of the largest American cities. Variables include record ID, reported date, victim's name, victim's race, victim's age, victim's sex, city and state, homicide location, and disposition. 
+<br>
+
+
+
