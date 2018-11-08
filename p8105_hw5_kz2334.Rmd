@@ -30,8 +30,6 @@ study_data = file_name %>%
   mutate(infor = purrr::map(str_c("./data/", id), read_csv)) 
 
 study_data
-
-
 ```
 <br>
 Tidy the result and manipulate file names to include control arm and subject ID.
@@ -134,10 +132,30 @@ prop_test_result = function(x, n){
 }
 
 #map function and create tidy dataframe
-prop_data %>%
+prop_data = prop_data %>%
  mutate(results = purrr::map2(num_unsolved_homi, num_homicide, prop_test_result)) %>% 
  unnest() %>% 
  select(city_state, num_homicide, num_unsolved_homi, estimate, conf.low, conf.high)
 
+prop_data
+```
+<br>
+Create a plot that shows the estimates and CIs for each city. Organize cities according to the proportion of unsolved homicides.
+
+```{r plot, fig.align = 'center'}
+prop_data %>% 
+  mutate(unsolved_prop = num_unsolved_homi/num_homicide,
+    city_state = fct_reorder(city_state, unsolved_prop)) %>% 
+  ggplot(aes(x = city_state, y = estimate)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.2) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(
+    title = "estimate proportion of unsolved homicides for each city",
+    x = "City",
+    y = "estimate proportion"
+  ) 
 ```
 
+From the plot we can see that Chicago has the largest esitmate and narrowest CI of proportion of unsolved homicides. We notice that there is abnormal CI for Tulsa, AL. It turns out that the number of homicides and the number of unsolved homicides in Tulsa is 1 and 0. The size is too small, resulting in bias in chi-square test.
