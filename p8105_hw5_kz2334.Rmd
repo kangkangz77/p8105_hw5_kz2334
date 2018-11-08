@@ -73,9 +73,54 @@ homicide_data = read_csv("./p2_data/homicide-data.csv")
 
 homicide_data
 ```
-<br>
+
 This dataset contains `r nrow(homicide_data)` rows and `r ncol(homicide_data)` columns, with each row resprenting a single homicide record over the past decade in 50 of the largest American cities. Variables include record ID, reported date, victim's name, victim's race, victim's age, victim's sex, city and state, homicide location, and disposition. 
 <br>
 
+---
 
+Create a `city_state` variable and then summarize within cities to obtain the total number of homicides and the number of unsolved homicides.
+```{r summarise number}
+homicide_data = homicide_data %>% 
+  mutate(city_state = str_c(city, ", ", state)) 
+
+prop_data = homicide_data %>%
+  group_by(city_state) %>% 
+  summarise(num_homicide = n(),
+            num_unsolved_homi = sum(disposition %in% c("Closed without arrest", "Open/No arrest"))) %>% 
+  arrange(desc(num_homicide))
+
+prop_data
+```
+We can see from the chart that Chicago is the city with the largest number of homicides, 5535.
+<br>
+
+For the city of Baltimore, MD, estimate the proportion of homicides that are unsolved; pull the estimated proportion and confidence intervals from the resulting tidy dataframe.
+```{r}
+Baltimore_data = prop_data %>%
+  filter(city_state == "Baltimore, MD") 
+
+#proportion test  
+result = prop.test(Baltimore_data$num_unsolved_homi, Baltimore_data$num_homicide)
+
+#pull estimated proportion
+broom::tidy(result) %>% 
+  pull(estimate)
+
+#pull lower side of CI
+broom::tidy(result) %>% 
+  pull(conf.low)
+
+#pull upper side of CI
+broom::tidy(result) %>% 
+  pull(conf.high)
+```
+
+The estimated proportion is `r broom::tidy(result) %>% pull(estimate)`, 95% confidence interval is (`r broom::tidy(result) %>% pull(conf.low)`, `r broom::tidy(result) %>% pull(conf.high)`).
+
+```{r}
+prop_data %>%
+ mutate(result = map2(.x = num_unsolved_homi, .y = num_homicide, ~prop.test(x =.x, n = .y))) 
+
+```
 
